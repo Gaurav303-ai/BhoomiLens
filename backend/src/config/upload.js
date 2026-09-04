@@ -1,8 +1,8 @@
 const multer = require("multer");
-const {crypto} = require("crypto");
+const crypto = require("crypto");
 const path = require("path");
 
-const uploadDir = path.join(process.cwd(), "uploads");
+const uploadDir = path.join(__dirname, "../../uploads");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -25,13 +25,26 @@ const upload = multer({
     },
 
     fileFilter: (req, file, cb) => {
+
+        console.log("========== FILE DEBUG ==========");
+        console.log("Original name:", file.originalname);
+        console.log("MIME type:", file.mimetype);
+        console.log("================================");
+
         const allowedTypes = [
             "application/pdf",
             "image/jpeg",
             "image/png"
         ];
+        const allowedExtensions = [
+            ".pdf",
+            ".jpg",
+            ".jpeg",
+            ".png"
+        ];
 
-        if (allowedTypes.includes(file.mimetype)) {
+        if (allowedTypes.includes(file.mimetype) ||
+            allowedExtensions.includes(path.extname(file.originalname).toLowerCase())) {
             cb(null, true);
         } else {
             cb(new Error("Only PDF, JPEG and PNG files can be uploaded."));

@@ -1,4 +1,5 @@
 const apiError = require('../../utils/ApiError');
+const documentRepository = require('./documen.repository');
 
 const uploadDocument = async ({ user_id, file }) => {
     const document = await documentRepository.createDocument({
