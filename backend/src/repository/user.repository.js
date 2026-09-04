@@ -5,7 +5,7 @@ const findEmployeeID = async(employeeID) =>{
     const result = await pool.query(`
         SELECT official_email 
         FROM land_record_officers
-        WHERE employee_id = $1
+        WHERE TRIM(employee_id) = $1
         AND is_active = TRUE`,
         [employeeID]
     );
