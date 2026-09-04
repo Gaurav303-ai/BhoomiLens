@@ -52,7 +52,43 @@ export default function OfficerLogin() {
     return e;
   }
 
-  async function handleSubmit(ev) {
+  // async function handleSubmit(ev) {
+  //   ev.preventDefault();
+  //   const v = validate();
+  //   setErrors(v);
+  //   if (Object.keys(v).length > 0) return;
+
+  //   setSubmitting(true);
+  //   setErrors({});
+
+  //   try {
+  //     const response = await fetch("http://localhost:8000/api/users/auth/login", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ 
+  //         employeeID: govId, 
+  //         phoneNumber: phone, 
+  //         password 
+  //       }),
+  //     });
+
+  //     const result = await response.json();
+
+  //     if (response.ok && result.success) {
+  //       localStorage.setItem("accessToken", result.data.accessToken);
+  //       localStorage.setItem("refreshToken", result.data.refreshToken);
+  //       navigate("/OfficerDashboard");
+  //     } else {
+  //       setErrors({ server: result.message || "Invalid credentials or login failed." });
+  //     }
+  //   } catch (err) {
+  //     console.error("Connection error:", err);
+  //     setErrors({ server: "Server connection error. Ensure backend is running on port 8000." });
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // }
+async function handleSubmit(ev) {
     ev.preventDefault();
     const v = validate();
     setErrors(v);
@@ -73,11 +109,24 @@ export default function OfficerLogin() {
       });
 
       const result = await response.json();
+      
+      // ✅ LOGGING: Isse console mein dikhega ki backend exactly kya bhej raha hai
+      console.log("Login API Result:", result);
 
-      if (response.ok && result.success) {
-        localStorage.setItem("accessToken", result.data.accessToken);
-        localStorage.setItem("refreshToken", result.data.refreshToken);
-        navigate("/OfficerDashboard");
+      // Agar status 200/201 hai (response.ok)
+      if (response.ok) {
+        // ✅ SMART TOKEN EXTRACTION: Backend chahe jaise bhi token bheje, ye nikal lega
+        const token = result.token || result.accessToken || (result.data && (result.data.accessToken || result.data.token));
+        const refresh = result.refreshToken || (result.data && result.data.refreshToken);
+
+        if (token) {
+          localStorage.setItem("accessToken", token);
+          if (refresh) localStorage.setItem("refreshToken", refresh); // Optional
+          
+          navigate("/OfficerDashboard");
+        } else {
+          setErrors({ server: "Login successful but token missing from backend response." });
+        }
       } else {
         setErrors({ server: result.message || "Invalid credentials or login failed." });
       }
@@ -88,7 +137,6 @@ export default function OfficerLogin() {
       setSubmitting(false);
     }
   }
-
   return (
     <div className="min-h-screen w-full flex items-center justify-center px-4 py-10" style={{ background: COLORS.paper, color: COLORS.ink }}>
       {/* Tricolour hairline top */}
