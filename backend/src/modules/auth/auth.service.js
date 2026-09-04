@@ -14,6 +14,9 @@ const signupSession = async({
     phoneNumber
 }) => {
     console.log("1. signupSession started");
+    console.log("employeeId received:", employeeID, typeof employeeID);
+    employeeID = employeeID.trim(); // Remove leading and trailing whitespace
+
     const existingEmployeeID = await userRepository.findEmployeeID(employeeID);
     if(!existingEmployeeID){
         throw new apiError(409,"invalid EmployeeID");
