@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const pool = require('../../config/db');
-const apiError = require('../../utils/ApiError');
+const apiError = require('../../utils/apiError');
 const userRepository = require('../../repository/user.repository');
 const { hashToken , generateCryptoCode, generateCryptoToken } = require('../../utils/token');
 const emailService = require('../../utils/emailService');

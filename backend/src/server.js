@@ -2,7 +2,6 @@ const path = require('path');
 require("dotenv").config({
     path: path.join(__dirname, '../.env')
 });
-console.log(process.env.DATABASE_URL);
 const app = require('./app');
 const pool = require("./config/db");
 const logger = require('./utils/logger');

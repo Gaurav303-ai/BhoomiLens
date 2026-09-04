@@ -1,273 +1,411 @@
-// export default function Upload() {
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { Upload, CheckCircle2, Cpu, ArrowRight, FileText, ShieldCheck } from "lucide-react";
+
+// const COLORS = {
+//   saffron: "#FF9933",
+//   navy: "#0B3D6B",
+//   green: "#0F7A3D",
+//   paper: "#F7F5EF",
+// };
+
+// export default function UploadDocument() {
+//   const [file, setFile] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const [extractedResult, setExtractedResult] = useState(null);
+//   const navigate = useNavigate();
+
+//   const handleFileChange = (e) => {
+//     setFile(e.target.files[0]);
+//   };
+
+//   const handleUploadAndExtract = async (e) => {
+//     e.preventDefault();
+//     if (!file) return alert("Please select a document image first!");
+
+//     setLoading(true);
+//     const formData = new FormData();
+//     formData.append("document", file); // Multer field name 'document'
+
+//     try {
+//       const response = await fetch("http://localhost:8000/api/users/documents/upload", {
+//         method: "POST",
+//         body: formData,
+//       });
+
+//       const result = await response.json();
+//       if (response.ok && result.success) {
+//         setExtractedResult(result.data);
+//       } else {
+//         alert(result.message || "Extraction failed");
+//       }
+//     } catch (err) {
+//       console.error("Upload network error:", err);
+//       // Fallback demo data agar backend active na ho
+//       setExtractedResult({
+//         ownerName: "Ram Prasad Sharma",
+//         khasraNumber: "124/2",
+//         village: "Chandrapur",
+//         totalArea: "1.25 Hectares",
+//         confidenceScore: "98.4%"
+//       });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleHitlApproval = () => {
+//     alert("Record successfully verified and committed to state database! 🎉");
+//     navigate("/OfficerDashboard");
+//   };
+
 //   return (
-//     <div className="p-8">
-//       <h1 className="text-3xl font-bold text-blue-800">Document Upload Dashboard</h1>
-//       <p className="text-gray-600 mt-2">Upload legacy scanned records for AI processing.</p>
+//     <div className="min-h-screen w-full p-6 sm:p-10" style={{ background: COLORS.paper, color: COLORS.navy }}>
+//       <div className="max-w-4xl mx-auto">
+        
+//         {/* Header */}
+//         <div className="mb-8 flex items-center justify-between border-b pb-4 border-slate-300">
+//           <div>
+//             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-1">
+//               <Cpu size={14} /> Problem 26018 · Gemini Flash Multimodal OCR Pipeline
+//             </div>
+//             <h1 className="text-2xl font-bold font-serif">Historical Document Digitization & HITL Review</h1>
+//           </div>
+//           <button onClick={() => navigate("/OfficerDashboard")} className="text-sm font-semibold underline">
+//             ← Back to Dashboard
+//           </button>
+//         </div>
+
+//         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+//           {/* Left: Upload Form */}
+//           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+//             <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+//               <Upload size={18} className="text-blue-600" /> Step 1: Upload Paper Record
+//             </h3>
+            
+//             <form onSubmit={handleUploadAndExtract} className="space-y-4">
+//               <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-50 transition cursor-pointer">
+//                 <FileText className="mx-auto h-12 w-12 text-slate-400 mb-2" />
+//                 <input type="file" onChange={handleFileChange} accept="image/*,application/pdf" className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+//                 <p className="text-xs text-slate-400 mt-2">Upload scanned Khasra, Khatauni or Jamabandi sheets</p>
+//               </div>
+
+//               <button 
+//                 type="submit" 
+//                 disabled={loading}
+//                 className="w-full py-3 rounded-xl text-white font-semibold transition flex items-center justify-center gap-2 shadow-md"
+//                 style={{ background: COLORS.green }}
+//               >
+//                 {loading ? "Gemini AI Parsing Document..." : <>Extract Data via Gemini AI <ArrowRight size={16} /></>}
+//               </button>
+//             </form>
+//           </div>
+
+//           {/* Right: AI Extraction & HITL Verification */}
+//           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+//             <div>
+//               <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+//                 <ShieldCheck size={18} className="text-emerald-600" /> Step 2: AI Parsed Results & HITL Review
+//               </h3>
+
+//               {extractedResult ? (
+//                 <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
+//                   <div className="flex justify-between border-b pb-2">
+//                     <span className="text-slate-500">Owner Name:</span>
+//                     <span className="font-bold text-slate-800">{extractedResult.ownerName}</span>
+//                   </div>
+//                   <div className="flex justify-between border-b pb-2">
+//                     <span className="text-slate-500">Khasra Number:</span>
+//                     <span className="font-bold font-mono text-slate-800">{extractedResult.khasraNumber}</span>
+//                   </div>
+//                   <div className="flex justify-between border-b pb-2">
+//                     <span className="text-slate-500">Village:</span>
+//                     <span className="font-bold text-slate-800">{extractedResult.village}</span>
+//                   </div>
+//                   <div className="flex justify-between border-b pb-2">
+//                     <span className="text-slate-500">Total Area:</span>
+//                     <span className="font-bold text-slate-800">{extractedResult.totalArea}</span>
+//                   </div>
+//                   <div className="flex justify-between items-center pt-1">
+//                     <span className="text-slate-500">OCR Confidence:</span>
+//                     <span className="bg-emerald-100 text-emerald-800 text-xs font-mono font-bold px-2 py-0.5 rounded">
+//                       {extractedResult.confidenceScore || "98.4%"}
+//                     </span>
+//                   </div>
+//                 </div>
+//               ) : (
+//                 <div className="text-center py-12 text-slate-400 border border-dashed rounded-xl">
+//                   <p className="text-sm">Awaiting document upload...</p>
+//                   <p className="text-xs mt-1">Structured JSON fields will appear here automatically.</p>
+//                 </div>
+//               )}
+//             </div>
+
+//             {extractedResult && (
+//               <button 
+//                 onClick={handleHitlApproval}
+//                 className="mt-6 w-full py-3 rounded-xl text-white font-semibold transition flex items-center justify-center gap-2 shadow-md"
+//                 style={{ background: COLORS.navy }}
+//               >
+//                 <CheckCircle2 size={18} /> Authorize & Commit to Registry
+//               </button>
+//             )}
+//           </div>
+
+//         </div>
+
+//       </div>
 //     </div>
-//   )
+//   );
 // }
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  UploadCloud, 
-  FileText, 
-  X, 
-  CheckCircle2, 
-  AlertCircle, 
-  ArrowLeft,
-  Image as ImageIcon
-} from 'lucide-react';
-import { uploadDocument } from '../services/api';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Upload, CheckCircle2, Cpu, ArrowRight, FileText, ShieldCheck, AlertTriangle, Pencil, Lock } from "lucide-react";
 
-export default function Upload() {
+const COLORS = {
+  saffron: "#FF9933",
+  navy: "#0B3D6B",
+  green: "#0F7A3D",
+  red: "#C0392B",
+  paper: "#F7F5EF",
+};
+
+// Below this, the officer must review/edit every field before proceeding.
+const CONFIDENCE_THRESHOLD = 95;
+
+const EMPTY_RESULT = { ownerName: "", khasraNumber: "", village: "", totalArea: "", confidenceScore: 0 };
+
+export default function UploadDocument() {
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
-  
-  // States
+
   const [file, setFile] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [status, setStatus] = useState('idle'); // idle, uploading, success, error
-  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [extractedResult, setExtractedResult] = useState(null);
+  const [editableResult, setEditableResult] = useState(EMPTY_RESULT);
+  const [isEditing, setIsEditing] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
 
-  // Constants for Validation
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-  const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-
-  // --- Helpers ---
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+    setExtractedResult(null);
+    setConfirmed(false);
   };
 
-  const getFileIcon = (fileType) => {
-    if (fileType?.includes('pdf')) return <FileText className="w-8 h-8 text-red-500" />;
-    return <ImageIcon className="w-8 h-8 text-blue-500" />;
-  };
-
-  // --- Validation ---
-  const validateAndSetFile = (selectedFile) => {
-    setErrorMessage('');
-    setStatus('idle');
-
-    if (!selectedFile) return;
-
-    if (!ALLOWED_TYPES.includes(selectedFile.type)) {
-      setErrorMessage('Invalid file type. Please upload a PDF, JPG, or PNG.');
-      return;
-    }
-
-    if (selectedFile.size > MAX_FILE_SIZE) {
-      setErrorMessage('File is too large. Maximum allowed size is 10MB.');
-      return;
-    }
-
-    setFile(selectedFile);
-  };
-
-  // --- Event Handlers ---
-  const handleDragOver = (e) => {
+  const handleUploadAndExtract = async (e) => {
     e.preventDefault();
-    setIsDragging(true);
-  };
+    if (!file) return alert("Please select a document image first!");
 
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
+    setLoading(true);
+    setExtractedResult(null);
+    setConfirmed(false);
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    validateAndSetFile(e.dataTransfer.files[0]);
-  };
+    const formData = new FormData();
+    formData.append("document", file); // Multer field name 'document'
 
-  const handleFileSelect = (e) => {
-    validateAndSetFile(e.target.files[0]);
-  };
-
-  const clearFile = () => {
-    setFile(null);
-    setStatus('idle');
-    setErrorMessage('');
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  // --- API Upload Execution ---
-  const executeUpload = async () => {
-    if (!file) return;
-    
-    setStatus('uploading');
-    setErrorMessage('');
-    
+    let result;
     try {
-      const response = await uploadDocument(file);
-      
-      if (response.success) {
-        setStatus('success');
+      const response = await fetch("http://localhost:8000/api/users/documents/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        result = data.data;
       } else {
-        setStatus('error');
-        setErrorMessage(response.message || 'Upload failed due to server error.');
+        alert(data.message || "Extraction failed");
       }
-    } catch (error) {
-      setStatus('error');
-      setErrorMessage(error.response?.data?.message || 'Network error! Please check if backend is running.');
+    } catch (err) {
+      console.error("Upload network error:", err);
+      // Fallback demo data if backend isn't running — remove once wired up.
+      result = {
+        ownerName: "Ram Prasad Sharma",
+        khasraNumber: "124/2",
+        village: "Chandrapur",
+        totalArea: "1.25 Hectares",
+        confidenceScore: 82.5, // try lowering/raising this to see both flows
+      };
     }
+
+    if (result) {
+      const score = typeof result.confidenceScore === "string" ? parseFloat(result.confidenceScore) : result.confidenceScore;
+      const normalised = { ...result, confidenceScore: score };
+      setExtractedResult(normalised);
+      setEditableResult(normalised);
+      // Low confidence → force the officer into edit mode immediately.
+      setIsEditing(score < CONFIDENCE_THRESHOLD);
+    }
+    setLoading(false);
+  };
+
+  const handleFieldChange = (field, value) => {
+    setEditableResult((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const isHighConfidence = extractedResult && extractedResult.confidenceScore >= CONFIDENCE_THRESHOLD;
+  // Officer can proceed if: confidence is high AND not editing, OR they've explicitly confirmed edited values.
+  const canProceed = extractedResult && ((isHighConfidence && !isEditing) || confirmed);
+
+  const handleConfirmEdits = () => {
+    setConfirmed(true);
+    setIsEditing(false);
+  };
+
+  const handleHitlApproval = () => {
+    // Replace with actual API call:
+    // await fetch("/api/records/commit", { method: "POST", body: JSON.stringify(editableResult) });
+    alert("Record successfully verified and committed to state database! 🎉");
+    navigate("/OfficerDashboard");
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 sm:p-6 lg:p-8">
-      
-      <div className="mx-auto max-w-4xl">
-        {/* Top Navigation */}
-        <button 
-          onClick={() => navigate('/')}
-          className="mb-6 flex items-center text-sm font-medium text-slate-500 transition hover:text-slate-800"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Dashboard
-        </button>
-
+    <div className="min-h-screen w-full p-6 sm:p-10" style={{ background: COLORS.paper, color: COLORS.navy }}>
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Upload Land Record</h1>
-          <p className="mt-2 text-slate-600">Securely upload scanned documents, maps, or physical records for AI digitization.</p>
+        <div className="mb-8 flex items-center justify-between border-b pb-4 border-slate-300">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-1">
+              <Cpu size={14} /> Problem 26018 · Gemini Flash Multimodal OCR Pipeline
+            </div>
+            <h1 className="text-2xl font-bold font-serif">Historical Document Digitization & HITL Review</h1>
+          </div>
+          <button onClick={() => navigate("/OfficerDashboard")} className="text-sm font-semibold underline">
+            ← Back to Dashboard
+          </button>
         </div>
 
-        {/* Main Upload Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="p-6 sm:p-10">
-            
-            {/* Error Banner */}
-            {errorMessage && (
-              <div className="mb-6 flex items-center rounded-xl bg-red-50 p-4 text-sm text-red-700 border border-red-100">
-                <AlertCircle className="mr-3 h-5 w-5 flex-shrink-0" />
-                {errorMessage}
-              </div>
-            )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left: Upload Form */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <Upload size={18} className="text-blue-600" /> Step 1: Upload Paper Record
+            </h3>
 
-            {/* Drag & Drop Zone (Hides when file is selected) */}
-            {!file && (
-              <div 
-                className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-12 transition-all duration-300
-                  ${isDragging ? 'border-emerald-500 bg-emerald-50' : 'border-slate-300 bg-slate-50 hover:border-emerald-400 hover:bg-emerald-50/50'}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <div className="rounded-full bg-white p-4 shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:shadow-md">
-                  <UploadCloud className={`h-10 w-10 ${isDragging ? 'text-emerald-600' : 'text-slate-400 group-hover:text-emerald-500'}`} />
-                </div>
-                
-                <h3 className="mt-5 text-lg font-semibold text-slate-700">Click to upload or drag and drop</h3>
-                <p className="mt-2 text-sm text-slate-500">PDF, PNG, or JPG (Max size: 10MB)</p>
-                
-                <input 
-                  type="file" 
-                  className="hidden" 
-                  ref={fileInputRef} 
-                  onChange={handleFileSelect} 
-                  accept=".pdf,.jpg,.jpeg,.png"
+            <form onSubmit={handleUploadAndExtract} className="space-y-4">
+              <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-50 transition cursor-pointer">
+                <FileText className="mx-auto h-12 w-12 text-slate-400 mb-2" />
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  accept="image/*,application/pdf"
+                  className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
+                <p className="text-xs text-slate-400 mt-2">Upload scanned Khasra, Khatauni or Jamabandi sheets</p>
               </div>
-            )}
 
-            {/* Selected File Preview Area */}
-            {file && (
-              <div className="space-y-6">
-                
-                {/* File Details Box */}
-                <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="flex items-center space-x-4 overflow-hidden">
-                    <div className="rounded-lg bg-white p-2 shadow-sm">
-                      {getFileIcon(file.type)}
-                    </div>
-                    <div className="truncate">
-                      <p className="truncate text-sm font-semibold text-slate-800">{file.name}</p>
-                      <p className="text-xs text-slate-500">{formatFileSize(file.size)}</p>
+              <button
+                type="submit"
+                disabled={loading || !file}
+                className="w-full py-3 rounded-xl text-white font-semibold transition flex items-center justify-center gap-2 shadow-md disabled:opacity-60"
+                style={{ background: COLORS.green }}
+              >
+                {loading ? "Gemini AI Parsing Document..." : <>Extract Data via Gemini AI <ArrowRight size={16} /></>}
+              </button>
+            </form>
+          </div>
+
+          {/* Right: AI Extraction & HITL Verification */}
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <ShieldCheck size={18} className="text-emerald-600" /> Step 2: AI Parsed Results & HITL Review
+              </h3>
+
+              {extractedResult ? (
+                <>
+                  {/* Confidence banner — tells the officer what's expected of them */}
+                  <div
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 mb-4 text-xs font-semibold"
+                    style={{
+                      background: isHighConfidence ? "#EAF6EE" : "#FDECEA",
+                      color: isHighConfidence ? COLORS.green : COLORS.red,
+                    }}
+                  >
+                    {isHighConfidence ? <CheckCircle2 size={14} /> : <AlertTriangle size={14} />}
+                    {isHighConfidence
+                      ? `High confidence (${extractedResult.confidenceScore}%) — ready to proceed`
+                      : `Low confidence (${extractedResult.confidenceScore}%) — please review and correct the fields below`}
+                  </div>
+
+                  <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
+                    <Field label="Owner Name" value={editableResult.ownerName} editable={isEditing} onChange={(v) => handleFieldChange("ownerName", v)} />
+                    <Field label="Khasra Number" value={editableResult.khasraNumber} editable={isEditing} mono onChange={(v) => handleFieldChange("khasraNumber", v)} />
+                    <Field label="Village" value={editableResult.village} editable={isEditing} onChange={(v) => handleFieldChange("village", v)} />
+                    <Field label="Total Area" value={editableResult.totalArea} editable={isEditing} onChange={(v) => handleFieldChange("totalArea", v)} last />
+                    <div className="flex justify-between items-center pt-1">
+                      <span className="text-slate-500">OCR Confidence:</span>
+                      <span
+                        className="text-xs font-mono font-bold px-2 py-0.5 rounded"
+                        style={{ background: isHighConfidence ? "#D1F2DE" : "#FADBD8", color: isHighConfidence ? COLORS.green : COLORS.red }}
+                      >
+                        {extractedResult.confidenceScore}%
+                      </span>
                     </div>
                   </div>
-                  
-                  {status === 'idle' && (
-                    <button 
-                      onClick={clearFile} 
-                      className="ml-4 flex-shrink-0 rounded-full p-2 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700"
-                      title="Remove file"
+
+                  {/* Edit toggle — always available even for high-confidence results */}
+                  {!isEditing && (
+                    <button
+                      onClick={() => { setIsEditing(true); setConfirmed(false); }}
+                      className="mt-3 flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-700"
                     >
-                      <X className="h-5 w-5" />
+                      <Pencil size={12} /> Edit fields manually
                     </button>
                   )}
-                  {status === 'success' && (
-                    <CheckCircle2 className="ml-4 h-6 w-6 flex-shrink-0 text-emerald-500" />
-                  )}
+                </>
+              ) : (
+                <div className="text-center py-12 text-slate-400 border border-dashed rounded-xl">
+                  <p className="text-sm">Awaiting document upload...</p>
+                  <p className="text-xs mt-1">Structured JSON fields will appear here automatically.</p>
                 </div>
+              )}
+            </div>
 
-                {/* Upload Action Area */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
-                  
-                  {status === 'idle' && (
-                    <>
-                      <button 
-                        onClick={clearFile}
-                        className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
-                      >
-                        Cancel
-                      </button>
-                      <button 
-                        onClick={executeUpload}
-                        className="flex items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-3 font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-                      >
-                        Start AI Extraction
-                      </button>
-                    </>
-                  )}
-                  
-                  {status === 'uploading' && (
-                    <button disabled className="flex items-center justify-center rounded-xl bg-emerald-400 px-6 py-3 font-semibold text-white cursor-wait w-full sm:w-auto">
-                      <svg className="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Uploading & Processing...
-                    </button>
-                  )}
-
-                  {status === 'success' && (
-                    <div className="flex w-full flex-col sm:flex-row items-center justify-between rounded-xl bg-emerald-50 p-4 border border-emerald-100 gap-4">
-                      <p className="text-sm font-medium text-emerald-800">
-                        Document successfully sent to AI Verification Queue.
-                      </p>
-                      <div className="flex gap-3 w-full sm:w-auto">
-                        <button 
-                          onClick={clearFile}
-                          className="flex-1 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm border border-emerald-200 hover:bg-emerald-50 transition"
-                        >
-                          Upload Another
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  
-                </div>
-              </div>
+            {extractedResult && (
+              <>
+                {isEditing ? (
+                  <button
+                    onClick={handleConfirmEdits}
+                    className="mt-6 w-full py-3 rounded-xl text-white font-semibold transition flex items-center justify-center gap-2 shadow-md"
+                    style={{ background: COLORS.saffron }}
+                  >
+                    <CheckCircle2 size={18} /> Confirm Corrected Values
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleHitlApproval}
+                    disabled={!canProceed}
+                    className="mt-6 w-full py-3 rounded-xl text-white font-semibold transition flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
+                    style={{ background: COLORS.navy }}
+                  >
+                    {canProceed ? <CheckCircle2 size={18} /> : <Lock size={16} />}
+                    {isHighConfidence ? "Authorize & Commit to Registry" : "Authorize & Commit (Human-Verified)"}
+                  </button>
+                )}
+              </>
             )}
-            
           </div>
         </div>
-
-        {/* Info Section */}
-        <div className="mt-8 rounded-xl bg-blue-50 p-5 text-sm text-blue-800 border border-blue-100">
-          <div className="flex items-start">
-            <AlertCircle className="mr-3 h-5 w-5 flex-shrink-0 mt-0.5" />
-            <p>
-              <strong>GovTech Standard Compliance:</strong> Documents uploaded here are stored temporarily on secure servers and passed to the Bhashini OCR / LayoutLM API for text extraction. Low confidence fields will be routed to the Verification Queue.
-            </p>
-          </div>
-        </div>
-
       </div>
+    </div>
+  );
+}
+
+/* ---------------- Field ---------------- */
+function Field({ label, value, editable, mono, onChange, last }) {
+  return (
+    <div className={`flex justify-between items-center gap-3 ${!last ? "border-b pb-2" : "pb-1"}`}>
+      <span className="text-slate-500 shrink-0">{label}:</span>
+      {editable ? (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`w-full max-w-[60%] rounded-lg border border-amber-300 bg-amber-50 px-2 py-1 text-right text-sm outline-none focus:ring-2 focus:ring-amber-200 ${mono ? "font-mono" : ""}`}
+        />
+      ) : (
+        <span className={`font-bold text-slate-800 text-right ${mono ? "font-mono" : ""}`}>{value}</span>
+      )}
     </div>
   );
 }

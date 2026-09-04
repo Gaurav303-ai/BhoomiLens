@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // <-- Naya Import
+import { useNavigate } from "react-router-dom";
 import { ShieldCheck, IdCard, Phone, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+
 const COLORS = {
   saffron: "#FF9933",
   navy: "#0B3D6B",
@@ -37,13 +38,11 @@ export default function OfficerLogin() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-//  const navigate = (path) => console.log("navigate:", path);
 
   function validate() {
     const e = {};
     if (!govId.trim()) e.govId = "Government ID is required.";
-    else if (!/^[A-Za-z0-9]{6,16}$/.test(govId.trim())) e.govId = "Enter a valid Government ID (6–16 alphanumeric characters).";
-
+    
     if (!phone.trim()) e.phone = "Phone number is required.";
     else if (!/^[6-9]\d{9}$/.test(phone.trim())) e.phone = "Enter a valid 10-digit Indian mobile number.";
 
@@ -53,24 +52,41 @@ export default function OfficerLogin() {
     return e;
   }
 
-  function handleSubmit(ev) {
+  async function handleSubmit(ev) {
     ev.preventDefault();
     const v = validate();
     setErrors(v);
     if (Object.keys(v).length > 0) return;
 
     setSubmitting(true);
-    // Replace with actual API call:
-    // const res = await fetch("/api/auth/officer/login", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ govId, phone, password }),
-    // });
+    setErrors({});
 
-  setTimeout(() => {
+    try {
+      const response = await fetch("http://localhost:8000/api/users/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          employeeID: govId, 
+          phoneNumber: phone, 
+          password 
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        localStorage.setItem("accessToken", result.data.accessToken);
+        localStorage.setItem("refreshToken", result.data.refreshToken);
+        navigate("/OfficerDashboard");
+      } else {
+        setErrors({ server: result.message || "Invalid credentials or login failed." });
+      }
+    } catch (err) {
+      console.error("Connection error:", err);
+      setErrors({ server: "Server connection error. Ensure backend is running on port 8000." });
+    } finally {
       setSubmitting(false);
-      navigate("/OfficerDashboard"); // <-- Yeh raha sahi route path string format mein
-    }, 900);
+    }
   }
 
   return (
@@ -106,6 +122,12 @@ export default function OfficerLogin() {
               <p className="text-xs text-slate-500">Access is logged and monitored.</p>
             </div>
           </div>
+
+          {errors.server && (
+            <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-3 text-xs text-red-700">
+              {errors.server}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
             {/* Government ID */}
@@ -212,19 +234,12 @@ export default function OfficerLogin() {
           </form>
         </div>
 
-        {/* Link to signup */}
-        {/* <p className="mt-5 text-center text-sm text-slate-600">
+        <p className="mt-5 text-center text-sm text-slate-600">
           Don't have an account linked yet?{" "}
-          <button onClick={() => navigate("/officer/signup")} className="font-semibold" style={{ color: COLORS.green }}>
+          <button onClick={() => navigate("/signup")} className="font-semibold" style={{ color: COLORS.green }}>
             Register your account
           </button>
-        </p> */}
-        <p className="mt-5 text-center text-sm text-slate-600">
-  Don't have an account linked yet?{" "}
-  <button onClick={() => navigate("/signup")} className="font-semibold" style={{ color: COLORS.green }}>
-    Register your account
-  </button>
-</p>
+        </p>
 
         <p className="mt-6 text-center text-xs text-slate-400">
           By continuing you agree to the department's Terms of Use and Privacy Policy.
